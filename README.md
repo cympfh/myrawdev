@@ -2,6 +2,13 @@
 
 自分用
 
+## Requirements
+
+- imagemagick
+- rawtherapee
+
+## Usage
+
 1. ここに `$F.RAF` を置く
 1. `make $F` を叩く
     - とりあえずのデフォルト設定 `profiles/mydefault.pp3` を使った現像が行われる
