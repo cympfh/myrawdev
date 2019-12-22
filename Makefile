@@ -13,4 +13,7 @@
 	$(eval DATETIME := $(shell identify -format "%[EXIF:DateTime]" $< ))
 	$(eval ANNO := "$(MODEL), f/$(F) 1/$(SS)s ISO$(ISO), $(DATETIME), Photo by @YameGuri")
 	$(eval WEIGHT := $(shell identify -format '%w' $< ))
-	convert -background '#0005' -fill '#fff6' -gravity West -font "Consolas" -pointsize 13 -size $(WEIGHT)x caption:$(ANNO) DSCF3589.jpg +swap -gravity SouthWest -composite $@
+	convert -background '#0005' -fill '#fff6' -gravity West -font "Consolas" -pointsize 13 -size $(WEIGHT)x caption:$(ANNO) $< +swap -gravity SouthWest -composite $@
+
+clean:
+	rm -f *.jpg
