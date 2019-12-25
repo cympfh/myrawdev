@@ -9,6 +9,17 @@
 
 ## Usage
 
+1. Setup
+    - PATH to `./bin`
+1. RAW ファイルのあるディレクトリで
+    - `mydev *.RAF`
+        - `*.RAF.pp3` と `*.jpg` が出来る
+        - jpg を見ながら pp3 を編集して満足行くまで繰り返す
+    - `mydev annotate *.jpg`
+        - `*.annotate.jpg` が出来る
+
+## (obsolete) Usage
+
 1. ここに `$F.RAF` を置く
 1. `make $F` を叩く
     - とりあえずのデフォルト設定 `profiles/mydefault.pp3` を使った現像が行われる

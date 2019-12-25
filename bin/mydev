@@ -1,0 +1,89 @@
+#!/bin/bash
+
+if ! which rawtherapee-cli >/dev/null; then
+    echo "Please install rawtherapee"
+    exit 1
+fi
+
+usage() {
+    cat <<EOM
+NAME - mydev
+
+SYNOPSYS
+
+    mydev *.RAF
+
+        Make *.RAF.pp3 and *.jpg.
+        If *.RAF.pp3 exists already, it will be applyed for converting JPG.
+        Otherwise, the default profile put.
+
+    mydev annotate *.jpg
+
+        Make *.annotate.jpg.
+        Annotate caption label at the bottom.
+
+        ENV
+            USER
+                Default: System Username (\${USER})
+                This will be used for copyright.
+                If this is empty, no copyright annotated.
+            FONT
+                Default: Consolas
+            FONTSIZE
+                Default: 13
+
+EOM
+    exit
+}
+
+dev() {
+    RAWNAME="$1"
+    BASENAME="${1%.*}"
+    DEFAULT_PROFILE="$(dirname $0)/../profiles/mydefault.pp3"
+    if [ ! -f "$RAWNAME.pp3" ]; then
+        cp "$DEFAULT_PROFILE" "$RAWNAME.pp3"
+    fi
+    rawtherapee-cli -Y -S -c $BASENAME.RAF
+}
+
+annotate() {
+    JPG=$1
+    BASENAME=${1%.*}
+    FONT=${FONT:-Consolas}
+    FONTSIZE=${FONTSIZE:-13}
+
+    MODEL=$(identify -format "%[EXIF:Make] %[EXIF:Model]" "$JPG")
+    F=$(identify -format "%[EXIF:FNumber]" "$JPG" | sed 's/.*/awk "BEGIN{print &}"/e')
+    SS=$(identify -format "%[EXIF:ExposureTime]" "$JPG" | sed 's#.*#awk "BEGIN{print 1/(&)}"#e')
+    ISO=$(identify -format "%[EXIF:PhotographicSensitivity]" "$JPG" )
+    DATETIME=$(identify -format "%[EXIF:DateTime]" "$JPG" )
+
+    LABEL="${MODEL}, f/${F} 1/${SS}s ISO${ISO}, ${DATETIME}"
+    if [ ! -z "$USER" ]; then
+        LABEL="${LABEL}, Photo by @${USER}"
+    fi
+
+    WEIGHT=$(identify -format '%w' "$JPG" )
+    convert -background '#0005' -fill '#fff6' -gravity West \
+        -font "${FONT}" \
+        -pointsize ${FONTSIZE} \
+        -size ${WEIGHT}x "caption:${LABEL}" "$JPG" \
+        +swap -gravity SouthWest -composite \
+        "$BASENAME.annotate.jpg"
+}
+
+if [ $# -eq 0 ]; then
+    usage
+fi
+case "$1" in
+    *.* )
+        dev "$1"
+        ;;
+    annotate )
+        annotate "$2"
+        ;;
+    * )
+        usage
+        ;;
+esac
+
