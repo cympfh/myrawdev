@@ -64,7 +64,7 @@ annotate() {
     fi
 
     WEIGHT=$(identify -format '%w' "$JPG" )
-    convert -background '#0005' -fill '#fff6' -gravity West \
+    convert -background '#0007' -fill '#fff9' -gravity West \
         -font "${FONT}" \
         -pointsize ${FONTSIZE} \
         -size ${WEIGHT}x "caption:${LABEL}" "$JPG" \
