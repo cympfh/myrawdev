@@ -64,10 +64,14 @@ annotate() {
     fi
 
     WEIGHT=$(identify -format '%w' "$JPG" )
-    convert -background '#0007' -fill '#fff9' -gravity West \
+    convert -background '#0008' -fill '#fff9' -gravity West \
         -font "${FONT}" \
         -pointsize ${FONTSIZE} \
-        -size ${WEIGHT}x "caption:${LABEL}" "$JPG" \
+        -size ${WEIGHT}x$((FONTSIZE + 3)) \
+        "caption:${LABEL}" \
+        -gravity North \
+        -splice x2 \
+        "$JPG" \
         +swap -gravity SouthWest -composite \
         "$BASENAME.annotate.jpg"
 }
