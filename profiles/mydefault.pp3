@@ -334,14 +334,8 @@ CenterX=0
 CenterY=0
 
 [Resize]
-Enabled=false
-Scale=0.14999999999999999
-AppliesTo=Cropped area
-Method=Lanczos
-DataSpecified=3
-Width=900
-Height=900
-AllowUpscaling=false
+Enabled=true
+Width=4800
 
 [PostResizeSharpening]
 Enabled=false
