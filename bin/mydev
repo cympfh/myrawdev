@@ -31,6 +31,9 @@ SYNOPSYS
                 Default: Consolas
             FONTSIZE
                 Default: 13
+            BLUR
+                alpha value ('0'-'f')
+                Default: 9
 
 EOM
     exit
@@ -97,8 +100,10 @@ annotate() {
         LABEL="${LABEL}, Photo by @${USER}"
     fi
 
+    BLUR=${BLUR:-9}
+
     WEIGHT=$(identify -format '%w' "$JPG" )
-    convert -background '#0008' -fill '#fff9' -gravity West \
+    convert -background "#000${BLUR}" -fill "#fff${BLUR}" -gravity West \
         -font "${FONT}" \
         -pointsize ${FONTSIZE} \
         -size ${WEIGHT}x$((FONTSIZE + 3)) \
