@@ -11,13 +11,13 @@ NAME - mydev
 
 SYNOPSYS
 
-    mydev *.RAF
+    mydev [ -o out.jpg ] *.RAF
 
         Make *.RAF.pp3 and *.jpg.
         If *.RAF.pp3 exists already, it will be applyed for converting JPG.
         Otherwise, the default profile put.
 
-    mydev annotate *.jpg
+    mydev annotate [ -o out.jpg ] *.jpg
 
         Make *.annotate.jpg.
         Annotate caption label at the bottom.
@@ -37,18 +37,52 @@ EOM
 }
 
 dev() {
-    RAWNAME="$1"
-    BASENAME="${1%.*}"
+
+    # argparse
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -o )
+                OUTNAME=$2
+                shift 2
+                ;;
+            * )
+                RAWNAME=$1
+                shift
+                ;;
+        esac
+    done
+    if [ -z "$OUTNAME" ]; then
+        OUTNAME="$RAWNAME.jpg"
+    fi
+
+    BASENAME="${RAWNAME%.*}"
     DEFAULT_PROFILE="$(dirname $0)/../profiles/mydefault.pp3"
     if [ ! -f "$RAWNAME.pp3" ]; then
         cp "$DEFAULT_PROFILE" "$RAWNAME.pp3"
     fi
-    rawtherapee-cli -Y -S -c $BASENAME.RAF
+    rawtherapee-cli -Y -S -o $OUTNAME -c $BASENAME.RAF
 }
 
 annotate() {
-    JPG=$1
-    BASENAME=${1%.*}
+
+    # argparse
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -o )
+                OUTNAME=$2
+                shift 2
+                ;;
+            * )
+                JPG=$1
+                shift
+                ;;
+        esac
+    done
+    if [ -z "$OUTNAME" ]; then
+        OUTNAME="$JPG.annotate.jpg"
+    fi
+
+    BASENAME=${JPG%.*}
     FONT=${FONT:-Consolas}
     FONTSIZE=${FONTSIZE:-13}
 
@@ -73,21 +107,21 @@ annotate() {
         -splice x2 \
         "$JPG" \
         +swap -gravity SouthWest -composite \
-        "$BASENAME.annotate.jpg"
+        "$OUTNAME"
 }
 
 if [ $# -eq 0 ]; then
     usage
 fi
 case "$1" in
-    *.* )
-        dev "$1"
-        ;;
-    annotate )
-        annotate "$2"
-        ;;
-    * )
+    -h | --help )
         usage
         ;;
+    A | a | an* )
+        shift
+        annotate $@
+        ;;
+    * )
+        dev $@
+        ;;
 esac
-
